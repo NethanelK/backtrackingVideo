@@ -1,6 +1,7 @@
-./idea
 Nati.mp4
 __pycache__/
 media/
 slides/
 .DS_Store
+venv/
+.idea/
