@@ -38,13 +38,13 @@ def intro(self):
 
     # Part 1: Understanding the Problem
     understanding = Text(
-        "1. Understanding the Problem",
+        "1. Examples of Backtracking Questions",
         font="Arial", color=WHITE).scale(0.6)
     understanding.next_to(title, DOWN, buff=1)
 
     # Part 2: Example of Backtracking Questions
     examples = Text(
-        "2. Examples of Backtracking Questions",
+        "2. Understanding the Problem",
         font="Arial", color=WHITE).scale(0.6)
     examples.next_to(understanding, DOWN, buff=1)
 
@@ -67,7 +67,7 @@ def intro(self):
 
 
 
-def generate_tree(self,start_coord, visited_nodes, show_animation=True, check_bounds=True):
+def generate_tree(self,start_coord, out_of_bound_nodes, visited_nodes, replace_nodes=None, show_animation=True, check_bounds=True):
     with open('nodes_position.json', 'r') as file:
         pos = json.load(file)
     pos = {int(key): value for key, value in pos.items()}
@@ -81,21 +81,24 @@ def generate_tree(self,start_coord, visited_nodes, show_animation=True, check_bo
 
     for idx, (dx, dy) in enumerate(directions):
         out_of_bounds_or_visited = False
-        end_coords = (start_coord[0] + dx,start_coord[1] + dy)
+        end_coords = (start_coord[0] + dx, start_coord[1] + dy)
         node_color = color_good
-
-        if check_bounds and (end_coords[0] < 0 or end_coords[1] < 0) :
+        index1 = idx+2
+        if check_bounds and index1 in out_of_bound_nodes:
             node_color = color_out_of_bounds
             out_of_bounds_or_visited = True
-        if check_bounds and idx+2 in visited_nodes:
+        if check_bounds and index1 in visited_nodes:
             node_color = color_visited
             out_of_bounds_or_visited = True
+
         new_label = Text(f"({end_coords[0]}, {end_coords[1]})", font_size=18, color=node_color)
+        if replace_nodes:
+            new_label = replace_nodes[index1]
         new_label.move_to(pos[idx + 2])
         new_label.shift(UP * 0.2)
         labels.append(new_label)
 
-        arrow = Arrow(pos[1], new_label.get_top(), buff=0.1, color=node_color)
+        arrow = Arrow(pos[1], new_label.get_top(), buff=0.2, color=node_color)
         arrows.append(arrow)
 
         if show_animation:
@@ -108,13 +111,16 @@ def generate_tree(self,start_coord, visited_nodes, show_animation=True, check_bo
         for idx2, (dx2, dy2) in enumerate(directions):
             end_coords2 = (start_coord[0] + dx + dx2, start_coord[1] + dy + dy2)
             node_color2 = color_good
-            if check_bounds and (end_coords2[0] < 0 or end_coords2[1] < 0):
+            index2 = (idx + 1) * 4 + idx2 + 2
+            if check_bounds and index2 in out_of_bound_nodes:
                 node_color2 = color_out_of_bounds
-            if check_bounds and (idx + 1) * 4 + idx2 + 2 in visited_nodes:
+            if check_bounds and index2 in visited_nodes:
                 node_color2 = color_visited
 
             new_label2 = Text(f"({end_coords2[0]}, {end_coords2[1]})", font_size=18, color=node_color2)
-            new_label2.move_to(pos[(idx + 1) * 4 + idx2 + 2])
+            if replace_nodes:
+                new_label2 = replace_nodes[index2]
+            new_label2.move_to(pos[index2])
             labels.append(new_label2)
             # Connect the new dot to the previous level
             arrow = Arrow(new_label.get_bottom(), new_label2.get_top(), buff=0.1, color=node_color2)

@@ -22,8 +22,8 @@ class Backtracking(Scene):
         grid_problem_code_rec(self)
         grid_problem_code_wrapper(self)
         groups_problem_code(self)
-        animate_groups(self)
-
+        animate_groups_tree(self)
+        backtracking_structure(self)
 
 
 # Press the green button in the gutter to run the script.

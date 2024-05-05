@@ -124,7 +124,7 @@ def grid_visualising(self):
 def groups_preview(self):
 
     # Title for the scene
-    intro_text = Text("Grouping Problem on an Array", font_size=36, color=WHITE)
+    intro_text = Text("Groups sum Problem", font_size=36, color=WHITE)
     intro_text.to_edge(UP)
     intro_text.shift(DOWN * 0.5)
 
@@ -240,6 +240,10 @@ def backtracking_intro_guide(self):
               FadeOut(solution_text))
 
 def generate_grid_full_tree(self):
+    intro_text = Text("Grid Backtracking Exploration", font_size=28, color=WHITE)
+    intro_text.to_edge(UP)
+    self.play(Write(intro_text))
+
     color_good = BLUE
     start_coord = (0, 0)
     start_label = Text(f"({start_coord[0]}, {start_coord[1]})", font_size=18, color=color_good)
@@ -248,16 +252,20 @@ def generate_grid_full_tree(self):
     self.play(Write(start_label), run_time=0.3)
     visited_nodes = [4,10,12,18]
     out_of_bounds = [5,9,11,13,14,15,16,17,19,20]
-    labels, arrows = generate_tree(self, start_coord, visited_nodes, show_animation=False, check_bounds=False)
+    labels, arrows = generate_tree(self, start_coord, out_of_bounds, visited_nodes, show_animation=False, check_bounds=False)
 
     out_of_bounds_labels = [labels[idx-1] for idx in out_of_bounds]
     visited_nodes_labels = [labels[idx-1] for idx in visited_nodes]
     self.play(*[vgroup.animate.scale(1.2).set_color(RED) for vgroup in out_of_bounds_labels])
     self.play(*[vgroup.animate.scale(1.2).set_color(YELLOW) for vgroup in visited_nodes_labels])
     self.wait(1.43)
-    self.play(FadeOut(VGroup(*arrows)), FadeOut(VGroup(*labels)), FadeOut(start_label))
+    self.play(FadeOut(VGroup(*arrows)), FadeOut(VGroup(*labels)), FadeOut(start_label), FadeOut(intro_text))
 
 def generate_grid_tree(self):
+
+    intro_text = Text("Grid Backtracking Exploration", font_size=28, color=WHITE)
+    intro_text.to_edge(UP)
+    self.play(Write(intro_text))
 
     color_good = BLUE
     start_coord = (0, 0)
@@ -280,8 +288,9 @@ def generate_grid_tree(self):
 
     #play first round
     self.play(Write(start_label), run_time=0.3)
-    visited_nodes = [8,13]
-    labels, arrows = generate_tree(self,start_coord, visited_nodes)
+    visited_nodes = [8,13,14]
+    out_of_bounds = [4,5,9,12]
+    labels, arrows = generate_tree(self,start_coord,out_of_bounds, visited_nodes)
     self.play(FadeOut(VGroup(*arrows)), FadeOut(VGroup(*labels)))
 
     self.play(start_label.animate.move_to([4, 3, 0]))
@@ -295,7 +304,8 @@ def generate_grid_tree(self):
 
     self.play(Write(start_label2))
     visited_nodes2 = [4, 8, 13]
-    labels, arrows = generate_tree(self, start_coord2, visited_nodes2)
+    out_of_bounds2 = [5,9]
+    labels, arrows = generate_tree(self, start_coord2, out_of_bounds2, visited_nodes2 )
     self.play(FadeOut(VGroup(*arrows)), FadeOut(VGroup(*labels)))
 
     # play third round
@@ -307,10 +317,11 @@ def generate_grid_tree(self):
 
     self.play(Write(start_label3))
     visited_nodes3 = [5,8,13,14,17]
-    labels, arrows = generate_tree(self, start_coord3, visited_nodes3)
+    out_of_bounds3 = []
+    labels, arrows = generate_tree(self, start_coord3,out_of_bounds3, visited_nodes3)
     obj_list.append(arrow2_3)
     obj_list.append(start_label3)
-    self.play(FadeOut(VGroup(*arrows)), FadeOut(VGroup(*obj_list)), FadeOut(VGroup(*labels)))
+    self.play(FadeOut(VGroup(*arrows)), FadeOut(VGroup(*obj_list)), FadeOut(VGroup(*labels)), FadeOut(intro_text))
 
 def how_to_run(self):
 
@@ -479,7 +490,7 @@ def display_code_get_min_path():
     code_text = '''
                 if i, j == m, n: 
                     return path  // Good stop 
-                if i or j  out  of  bounds  or grid[ i ][ j ] == 2 or path > m + n: 
+                if i or j  out  of  bounds  or grid[ i ][ j ] == 2: 
                     return N*N+1  // Bad stop
                 directions = [(0,1),(1,0),(-1,0),(0,-1)]
                 min_path = N*N+1
@@ -574,8 +585,10 @@ def groups_problem_code(self):
     legal_groups = Text(
         "Legal function:\n"
         "not real code!\n\n"
-        " for group in groups:\n"
-        "   if group > k:\n"
+        " for i in range(n):\n"
+        "   if i > 0 and groups[ i - 1] == 0:\n"
+        "       return true # already checked that possibility\n"
+        "   if groups[ i ] > k:\n"
         "       return true # not legal\n"
         " return false  # all groups are legal\n",
         line_spacing=1,
@@ -619,125 +632,150 @@ def display_code_rec_groups():
     return code
 
 
-def animate_groups(self):
+def animate_groups_tree(self):
+    # show backtracking
+    intro_text = Text("Groups Backtracking Exploration", font_size=36, color=WHITE)
+    intro_text.to_edge(UP)
+    self.play(Write(intro_text))
 
-        # show backtracking
-        intro_text = Text("Groups Backtracking Exploration", font_size=36, color=WHITE)
-        intro_text.to_edge(UP)
-        self.play(Write(intro_text))
+    numbers = [10, 20, 80, 90, 30]
+    num_objects = VGroup(*[Text(str(num), font_size=30, color=YELLOW_A) for num in numbers])
+    num_objects.arrange(RIGHT, buff=0.3)
+    num_objects.move_to(intro_text.get_bottom())
+    num_objects.shift(LEFT * 4.5)
+    num_objects.shift(DOWN * 0.7)
 
-        numbers = [10, 20, 30, 40, 50]
-        num_objects = VGroup(*[Text(str(num), font_size=30) for num in numbers])
-        num_objects.arrange(RIGHT, buff=0.3)
-        num_objects.next_to(intro_text)
-        num_objects.shift(DOWN)
+    k_text = Text("K = 100", font_size=30, color=GREEN)
+    k_text.move_to(num_objects[2].get_bottom())
+    k_text.shift(DOWN * 0.5)
 
-        # Introduce all numbers at once
-        self.play(FadeIn(num_objects), run_time=0.4)
+    # Introduce all numbers at once
+    self.play(FadeIn(num_objects), Write(k_text), run_time=0.4)
 
-        # Define the starting position and create the main node
-        start_pos = np.array([0, 2, 0])  # Start at the center top
-        start_dot = Dot(start_pos, color=RED)
-        start_label = text = MarkupText(
-            f'0, <span fgcolor="{WHITE}">0</span>, <span fgcolor="{PINK}">0</span>, <span fgcolor="{GREEN}">0</span>', color=YELLOW, font_size=30).next_to(start_dot, UP, buff=SMALL_BUFF)
-        self.play(Write(start_label))
-        all_scene = VGroup()
-        all_scene.add(intro_text)
-        all_scene.add(start_label)
-        # Generate the tree vertically downwards
+    # Define the starting position and create the main node
+    start_pos = np.array([0, 2, 0])  # Start at the center top
+    start_dot = Dot(start_pos, color=RED)
+    start_label = MarkupText(
+        f'0, <span fgcolor="{WHITE}">0</span>, <span fgcolor="{PINK}">0</span>, <span fgcolor="{GREEN}">0</span>',
+        color=YELLOW, font_size=30).next_to(start_dot, UP, buff=SMALL_BUFF)
+    self.play(Write(start_label))
 
-        directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
-        dict_labels_depth_2 = {
-            (0, 1): Text("10", t2c={"10": YELLOW}, font_size=30),
-            (1, 0): Text("10", t2c={"10": WHITE}, font_size=30),
-            (0, -1): Text("10", t2c={"10": PINK}, font_size=30),
-            (-1, 0): Text("10", t2c={"10": GREEN}, font_size=30),
-        }
-        dict_labels = [
-            {
-                (0, 2): Text("30 ", t2c={"30": YELLOW}, font_size=23),
-                (1, 1): Text("20,10 ", t2c={"20": YELLOW, "10": WHITE}, font_size=23),
-                (0, 0): Text("20,10 ", t2c={"20": YELLOW, "10": PINK}, font_size=23),
-                (-1, 1): Text("20,10 ", t2c={"20": YELLOW, "10": GREEN}, font_size=23),
-            }, {
-                (1, 1): Text("10,20 ", t2c={"10": YELLOW, "20": WHITE}, font_size=23),
-                (2, 0): Text("30 ", t2c={"30": WHITE}, font_size=23),
-                (1, -1): Text("10,20 ", t2c={"10": PINK, "20": WHITE}, font_size=23),
-                (0, 0): Text("10,20 ", t2c={"10": GREEN, "20": WHITE}, font_size=23),
-            }, {
-                (0, 0): Text("10,20 ", t2c={"10": YELLOW, "20": PINK}, font_size=23),
-                (1, -1): Text("10,20 ", t2c={"10": WHITE, "20": PINK}, font_size=23),
-                (0, -2): Text("30 ", t2c={"30": PINK}, font_size=23),
-                (-1, -1): Text("10,20 ", t2c={"10": GREEN, "20": PINK}, font_size=23),
-            }, {
-                (-1, 1): Text("10,20 ", t2c={"10": YELLOW, "20": GREEN}, font_size=23),
-                (0, 0): Text("10,20 ", t2c={"10": WHITE, "20": GREEN}, font_size=23),
-                (-1, -1): Text("10,20 ", t2c={"10": PINK, "20": GREEN}, font_size=23),
-                (-2, 0): Text("30 ", t2c={"30": GREEN}, font_size=23),
-            }]
-        pos = {
-            # Layer 1: Root
-            1: [0, 2, 0],  # Root node
+    self.play(num_objects[0].animate.set_color(TEAL), num_objects[1].animate.set_color(TEAL))
 
-            # Layer 2: First set of children
-            2: [-5.095, 0.5, 0],  # Four children, spaced wider
-            3: [-1.695, 0.5, 0],
-            4: [1.705, 0.5, 0],
-            5: [5.105, 0.5, 0],
+    replace_dict_full = {
+        2: Text("10", t2c={"10": YELLOW}, font_size=30),
+        3: Text("10", t2c={"10": WHITE}, font_size=30),
+        4: Text("10", t2c={"10": PINK}, font_size=30),
+        5: Text("10", t2c={"10": GREEN}, font_size=30),
 
-            # Layer 3: Children of Node 2
-            6: [-6.37, -1.5, 0],
-            7: [-5.52, -1.5, 0],
-            8: [-4.67, -1.5, 0],
-            9: [-3.82, -1.5, 0],
+        6: Text("30 ", t2c={"30": YELLOW}, font_size=23),
+        7: Text("20,10 ", t2c={"10": YELLOW, "20": WHITE}, font_size=23),
+        8: Text("20,10 ", t2c={"10": YELLOW, "20": PINK}, font_size=23),
+        9: Text("20,10 ", t2c={"10": YELLOW, "20": GREEN}, font_size=23),
 
-            # Children of Node 3
-            10: [-2.97, -1.0, 0],
-            11: [-2.12, -1.0, 0],
-            12: [-1.27, -1.0, 0],
-            13: [-0.42, -1.0, 0],
+        10: Text("10,20 ", t2c={"20": YELLOW, "10": WHITE}, font_size=23),
+        11: Text("30 ", t2c={"30": WHITE}, font_size=23),
+        12: Text("10,20 ", t2c={"20": PINK, "10": WHITE}, font_size=23),
+        13: Text("10,20 ", t2c={"20": GREEN, "10": WHITE}, font_size=23),
 
-            # Children of Node 4
-            14: [0.43, -1.5, 0],
-            15: [1.28, -1.5, 0],
-            16: [2.13, -1.5, 0],
-            17: [2.98, -1.5, 0],
+        14: Text("10,20 ", t2c={"20": YELLOW, "10": PINK}, font_size=23),
+        15: Text("10,20 ", t2c={"20": WHITE, "10": PINK}, font_size=23),
+        16: Text("30 ", t2c={"30": PINK}, font_size=23),
+        17: Text("10,20 ", t2c={"20": GREEN, "10": PINK}, font_size=23),
 
-            # Children of Node 5
-            18: [3.83, -1.0, 0],
-            19: [4.68, -1.0, 0],
-            20: [5.53, -1.0, 0],
-            21: [6.38, -1.0, 0],
-        }
-        labels = []
-        color = BLUE
-        for idx, (dx, dy) in enumerate(directions):
-            end_coords = (dx, dy)
-            new_label = dict_labels_depth_2[end_coords]
-            new_label.move_to(pos[idx+2])
-            new_label.shift(UP * 0.2)
-            self.play(num_objects[0].animate.scale(1.5), run_time=0.3)
-            self.play(Write(new_label), run_time=0.3)
-            arrow = Arrow(pos[1], new_label.get_top(), buff=0.1, color=color)
-            self.play(GrowArrow(arrow), run_time=0.5)
-            self.play(num_objects[0].animate.scale(2 / 3), run_time=0.3)
-            labels.append(new_label)
-            all_scene.add(new_label)
-            all_scene.add(arrow)
-            for idx2, (dx2, dy2) in enumerate(directions):
-                end_coords2 = (dx + dx2, dy + dy2)
-                new_label2 = dict_labels[idx2][end_coords2]
-                new_label2.move_to(pos[(idx+1)*4 + idx2 + 2])
-                self.play(num_objects[1].animate.scale(1.5), run_time=0.3)
-                self.play(Write(new_label2), run_time=0.3)
-                # Connect the new dot to the previous level
-                arrow = Arrow(new_label.get_bottom(), new_label2.get_top(), buff=0.1, color=color)
-                self.play(GrowArrow(arrow), run_time=0.5)
-                self.play(num_objects[1].animate.scale(2 / 3), run_time=0.3)
-                labels.append(new_label2)
-                all_scene.add(new_label2)
-                all_scene.add(arrow)
+        18: Text("10,20 ", t2c={"20": YELLOW, "10": GREEN}, font_size=23),
+        19: Text("10,20 ", t2c={"20": WHITE, "10": GREEN}, font_size=23),
+        20: Text("10,20 ", t2c={"20": PINK, "10": GREEN}, font_size=23),
+        21: Text("30 ", t2c={"30": GREEN}, font_size=23)
+    }
 
-        self.wait(2)
-        self.play(FadeOut(all_scene), FadeOut(num_objects))
+    visited_nodes_full = [4, 5,6, 9, 10,11, 13,15, 16,18,19]
+    # run full tree
+    labels, arrows = generate_tree(self, (0, 0), [], [], replace_nodes=replace_dict_full, show_animation=False, check_bounds=False)
+    visited_nodes_labels = [labels[idx - 1] for idx in visited_nodes_full]
+    self.play(*[vgroup.animate.scale(1.2).set_color(RED_B) for vgroup in visited_nodes_labels])
+    self.wait(1.43)
+    self.play(FadeOut(VGroup(*arrows)), FadeOut(VGroup(*labels)))
+
+    # run with visited 1
+    visited_nodes = [3,4,5,8,9]
+
+    replace_dict = {
+        2: Text("10", t2c={"10": YELLOW}, font_size=30),
+        3: Text("10", t2c={"10": WHITE}, font_size=30),
+        4: Text("10", t2c={"10": PINK}, font_size=30),
+        5: Text("10", t2c={"10": GREEN}, font_size=30),
+
+        6: Text("30 ", t2c={"30": YELLOW}, font_size=23),
+        7: Text("20,10 ", t2c={"10": YELLOW, "20": WHITE}, font_size=23),
+        8: Text("20,10 ", t2c={"10": YELLOW, "20": PINK}, font_size=23),
+        9: Text("20,10 ", t2c={"10": YELLOW, "20": GREEN}, font_size=23),
+    }
+
+    labels, arrows = generate_tree(self,(0,0), [], visited_nodes, replace_nodes=replace_dict)
+
+    self.wait(1.43)
+    self.play(FadeOut(VGroup(*arrows)), FadeOut(VGroup(*labels)))
+    # run with visited 2
+
+    start_label1 = MarkupText(
+        f'<span fgcolor="{YELLOW}">0</span>,<span fgcolor="{WHITE}">0</span>,<span fgcolor="{GREEN}">0</span>,<span fgcolor="{PINK}">0</span>',
+        font_size=30).move_to(intro_text.get_bottom())
+    start_label1.shift(RIGHT * 6 + DOWN)
+
+
+    start_label2 = MarkupText(
+            f'<span fgcolor="{YELLOW}">10</span>,<span fgcolor="{WHITE}">0</span>,<span fgcolor="{GREEN}">0</span>,<span fgcolor="{PINK}">0</span>',
+            font_size=30).move_to(intro_text.get_bottom())
+    start_label2.shift(RIGHT * 3.5 + DOWN)
+
+
+    start_label_second = MarkupText(
+        f' <span fgcolor="{YELLOW}">10</span>, <span fgcolor="{WHITE}">20</span>, 0, <span fgcolor="{GREEN}">0</span>',
+        color=PINK, font_size=30).next_to(start_dot, UP, buff=SMALL_BUFF)
+
+    arrow1_2 = Arrow(start_label1.get_left(), start_label2.get_right(), buff=0.1, color=TEAL)
+
+    arrow2_3 = Arrow(start_label2.get_left(), start_label.get_right(), color=TEAL)
+
+    self.play(Transform(start_label, start_label_second), Write(arrow1_2), Write(arrow2_3),  Write(start_label1), Write(start_label2))
+
+    self.play(num_objects[2].animate.set_color(TEAL), num_objects[3].animate.set_color(TEAL))
+
+    out_of_bound_nodes = [6,7,11, 15,16]
+    visited_nodes = [5, 9,13]
+
+    replace_dict_second_layer = {
+        2: Text("90,20", t2c={"90": YELLOW, "20": WHITE}, font_size=20),
+        3: MarkupText(f'<span fgcolor="{YELLOW}">10</span>,<span fgcolor="{WHITE}">100</span>', font_size=20),
+        4: Text("10,20,80", t2c={"10": YELLOW, "20": WHITE, "80":GREEN}, font_size=20),
+        5: Text("10,20,80", t2c={"10": YELLOW, "20": WHITE, "80":PINK}, font_size=20),
+
+        6: Text("180,20 ", t2c={"180": YELLOW, "20": WHITE}, font_size=15),
+        7: Text("90,110", t2c={"90": YELLOW, "110": WHITE}, font_size=15),
+        8: MarkupText(f'<span fgcolor="{YELLOW}">90</span>,<span fgcolor="{WHITE}">20</span>,<span fgcolor="{GREEN}">90</span>', font_size=15),
+        9: MarkupText(f'<span fgcolor="{YELLOW}">90</span>,<span fgcolor="{WHITE}">20</span>,<span fgcolor="{PINK}">90</span>', font_size=15),
+
+        10: MarkupText(f'<span fgcolor="{YELLOW}">100</span>,<span fgcolor="{WHITE}">100</span>', font_size=15),
+        11: MarkupText(f'<span fgcolor="{YELLOW}">10</span>,<span fgcolor="{WHITE}">190</span>', font_size=15),
+        12: MarkupText(f'<span fgcolor="{YELLOW}">10</span>,<span fgcolor="{WHITE}">100</span>,<span fgcolor="{GREEN}">90</span>', font_size=15),
+        13: MarkupText(f'<span fgcolor="{YELLOW}">10</span>,<span fgcolor="{WHITE}">100</span>,<span fgcolor="{PINK}">90</span>', font_size=15),
+
+        14: MarkupText(
+            f'<span fgcolor="{YELLOW}">100</span>,<span fgcolor="{WHITE}">20</span>,<span fgcolor="{GREEN}">80</span>',
+            font_size=15),
+        15: MarkupText(
+            f'<span fgcolor="{YELLOW}">10</span>,<span fgcolor="{WHITE}">110</span>,<span fgcolor="{GREEN}">80</span>',
+            font_size=15),
+        16: MarkupText(
+            f'<span fgcolor="{YELLOW}">10</span>,<span fgcolor="{WHITE}">20</span>,<span fgcolor="{GREEN}">170</span>',
+            font_size=15),
+        17: MarkupText(
+            f'<span fgcolor="{YELLOW}">10</span>,<span fgcolor="{WHITE}">20</span>,<span fgcolor="{GREEN}">80</span>,<span fgcolor="{PINK}">90</span>',
+            font_size=15),
+    }
+
+    labels, arrows = generate_tree(self, (0, 0), out_of_bound_nodes, visited_nodes, replace_nodes=replace_dict_second_layer)
+
+    self.play(FadeOut(arrow1_2), FadeOut(arrow2_3),  FadeOut(start_label1), FadeOut(start_label2), FadeOut(intro_text),FadeOut(start_label), FadeOut(num_objects), FadeOut(k_text), FadeOut(VGroup(*arrows)), FadeOut(VGroup(*labels)))
 
